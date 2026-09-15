@@ -285,8 +285,8 @@ private fun DrawScope.drawGoldPileSprite(
     val idx = (stage - 1).coerceIn(0, (sprites.goldPiles.size - 1).coerceAtLeast(0))
     val pile = sprites.goldPiles.getOrNull(idx)
     if (pile != null) {
-        // Late stages: soft background mountain ridges behind the main pile
-        if (stage >= 10) {
+        // Extra side mounds only at the very end (sprites already grow into mountains)
+        if (stage >= 11) {
             val back = sprites.goldPiles.getOrNull((idx - 2).coerceAtLeast(0)) ?: pile
             val sideScale = 0.55f + (stage - 10) * 0.08f
             val bw = canvasW * (0.34f + stage * 0.02f) * sideScale

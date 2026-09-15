@@ -21,4 +21,5 @@ Sprites are image-generated, chroma-keyed, then **forced through a tiny native g
 Live portal is the ornate gold-rim sprite. `portal_swirl.png` rotates inside a clipped oval in `CampCanvas` (driven by `GameState.tick`). Frame sheet: `assets/art/sheets/portal_swirl.png`. Camp-style portal kept as `portal_purple_camp_alt.png`.
 
 ## Gold pile growth
-`gold_pile_1`…`gold_pile_12` — granular stages from a few coins to hills/mountains. `GameState.pileStage` maps gold thresholds; Camp draws side ridges at stage ≥10 and a far mountain wash at 12.
+`gold_pile_1`…`gold_pile_12` — full redo: consistent image-generated coin piles from a few coins to mountain ranges. `GameState.pileStage` maps granular gold thresholds; Camp may add faint side mounds at stages 11–12.
+
