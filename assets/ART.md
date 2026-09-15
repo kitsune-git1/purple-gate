@@ -13,3 +13,6 @@ Sprites are image-generated, chroma-keyed, then **forced through a tiny native g
 
 ## Style refs (local build machine)
 `/workspace/purple-gate/style-ref/bh_*.png` — Play Store gallery captures for scale only.
+
+## Portal centrepiece
+`portal_purple.png` is intentionally higher native detail (~112px grid ×3) than unit sprites. Alternate ornate take: `assets/art/portal_purple_ornate_alt.png`.
