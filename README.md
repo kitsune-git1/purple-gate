@@ -15,7 +15,7 @@ Pixel goblins throw spells into a purple portal. Gold piles up. Send a minotaur 
 5. **Offline progress** via DataStore (gold + last-seen; grant on resume)
 6. **Prestige** — Slam Gate when Fire+Lightning+Ice familiars are online and the pile is huge → Grimoire pages, Necromancy stub, reset (new city starts Fire)
 7. Tabs: Camp / Spells / Beasts / Prestige · HUD: gold, gold/sec, raid timer
-8. Portrait, one-thumb; pixel feel via Compose Canvas (grape purple, slime green, torch orange, gold, mud brown)
+8. Portrait, one-thumb; Camp uses real pixel sprites (portal + gold piles + goblins/beasts) with Canvas fallbacks
 
 See [DESIGN_BRIEF.md](DESIGN_BRIEF.md) for the full design source of truth.
 
@@ -67,11 +67,25 @@ app/src/main/java/com/purplegate/app/
   ui/components/CampCanvas.kt   # portal, gold pile, spells, goblin
   ui/screens/                   # Camp, Spells, Beasts, Prestige, shell
   ui/theme/
+
+app/src/main/res/drawable-nodpi/  # pixel sprites
+assets/art/ + ART.md            # art bank + sheets
 ```
 
 ## Out of scope (for later)
 
 Full gacha, deep classes past Necromancy sketch, ads, beasts past Minotaur, aiming / projectile skill.
+
+
+## Art
+
+Pixel-art sprite bank (16-bit chunky, grape/slime/torch/gold/mud). Transparent PNGs live in:
+
+- `app/src/main/res/drawable-nodpi/` — runtime Android resources (portal, gold piles, goblins, spells, beasts, coin, camp_bg)
+- `assets/art/` — source bank + `sheets/` (spells, gold_piles, beasts)
+- See **[assets/ART.md](assets/ART.md)** for sizes, frame layouts, and palette
+
+Camp Compose UI (`CampCanvas`) draws `ImageBitmap` sprites with **nearest-neighbor** filtering and keeps Canvas shape fallbacks if a drawable is missing.
 
 ## License
 
