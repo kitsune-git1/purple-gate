@@ -102,7 +102,7 @@ data class GameState(
             return gps
         }
 
-    /** 0 = almost empty; 1..12 = granular pile sprites up to background mountains. */
+    /** 0 = empty; 1..12 grow the pile. Stage 7 locks tall hill into background; 12 locks mountain range. */
     val pileStage: Int
         get() = when {
             gold < 5 -> 0

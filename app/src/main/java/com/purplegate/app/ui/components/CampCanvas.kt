@@ -282,43 +282,38 @@ private fun DrawScope.drawGoldPileSprite(
         }
         return
     }
-    val idx = (stage - 1).coerceIn(0, (sprites.goldPiles.size - 1).coerceAtLeast(0))
-    val pile = sprites.goldPiles.getOrNull(idx)
-    if (pile != null) {
-        // Extra side mounds only at the very end (sprites already grow into mountains)
-        if (stage >= 11) {
-            val back = sprites.goldPiles.getOrNull((idx - 2).coerceAtLeast(0)) ?: pile
-            val sideScale = 0.55f + (stage - 10) * 0.08f
-            val bw = canvasW * (0.34f + stage * 0.02f) * sideScale
-            val bScale = bw / back.width
-            val bh = back.height * bScale
-            drawSprite(
-                back,
-                dst = Offset(base.x - canvasW * 0.38f - bw / 2f, base.y - bh * 0.75f),
-                dstSize = Size(bw, bh),
-                alpha = 0.55f,
-            )
-            drawSprite(
-                back,
-                dst = Offset(base.x + canvasW * 0.38f - bw / 2f, base.y - bh * 0.7f),
-                dstSize = Size(bw * 0.9f, bh * 0.9f),
-                alpha = 0.5f,
-            )
-        }
-        if (stage >= 12) {
-            val far = sprites.goldPiles.getOrNull(sprites.goldPiles.lastIndex) ?: pile
-            val fw = canvasW * 0.55f
-            val fScale = fw / far.width
-            val fh = far.height * fScale
-            drawSprite(
-                far,
-                dst = Offset(base.x - fw / 2f, base.y - fh * 0.95f - canvasW * 0.02f),
-                dstSize = Size(fw, fh),
-                alpha = 0.35f,
-            )
-        }
+    val piles = sprites.goldPiles
+    val idx = (stage - 1).coerceIn(0, (piles.size - 1).coerceAtLeast(0))
+    val pile = piles.getOrNull(idx)
 
-        val pw = canvasW * (0.22f + stage * 0.035f).coerceAtMost(0.72f)
+    // Milestone backgrounds (the tall hill / mountain look you liked)
+    val hill = piles.getOrNull(6) // stage 7
+    val mountains = piles.getOrNull(11) // stage 12
+    if (stage >= 7 && hill != null) {
+        val hw = canvasW * if (stage >= 12) 0.42f else 0.50f
+        val hs = hw / hill.width
+        val hh = hill.height * hs
+        drawSprite(
+            hill,
+            dst = Offset(base.x - hw / 2f, base.y - hh * 0.92f),
+            dstSize = Size(hw, hh),
+            alpha = if (stage >= 12) 0.40f else 0.55f,
+        )
+    }
+    if (stage >= 12 && mountains != null) {
+        val mw = canvasW * 0.78f
+        val ms = mw / mountains.width
+        val mh = mountains.height * ms
+        drawSprite(
+            mountains,
+            dst = Offset(base.x - mw / 2f, base.y - mh * 0.98f),
+            dstSize = Size(mw, mh),
+            alpha = 0.70f,
+        )
+    }
+
+    if (pile != null) {
+        val pw = canvasW * (0.20f + stage * 0.032f).coerceAtMost(0.62f)
         val scale = pw / pile.width
         val ph = pile.height * scale
         drawSprite(
@@ -326,7 +321,6 @@ private fun DrawScope.drawGoldPileSprite(
             dst = Offset(base.x - pw / 2f, base.y - ph * 0.85f),
             dstSize = Size(pw, ph),
         )
-        // school tint wash on crest for bigger piles
         if (stage >= 6) {
             val tint = when (hottest) {
                 SpellSchool.FIRE -> EmberTint
@@ -335,7 +329,7 @@ private fun DrawScope.drawGoldPileSprite(
                 SpellSchool.NECROMANCY -> Color(0xFFECEFF1)
             }
             drawCircle(
-                tint.copy(alpha = 0.28f + stage * 0.01f),
+                tint.copy(alpha = 0.22f + stage * 0.008f),
                 radius = (8 + stage).dp.toPx(),
                 center = Offset(base.x, base.y - ph * 0.72f),
             )
