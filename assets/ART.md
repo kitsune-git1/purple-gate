@@ -16,3 +16,6 @@ Sprites are image-generated, chroma-keyed, then **forced through a tiny native g
 
 ## Portal centrepiece
 `portal_purple.png` is intentionally higher native detail (~112px grid ×3) than unit sprites. Alternate ornate take: `assets/art/portal_purple_ornate_alt.png`.
+
+## Portal swirl animation
+Live portal is the ornate gold-rim sprite. `portal_swirl.png` rotates inside a clipped oval in `CampCanvas` (driven by `GameState.tick`). Frame sheet: `assets/art/sheets/portal_swirl.png`. Camp-style portal kept as `portal_purple_camp_alt.png`.

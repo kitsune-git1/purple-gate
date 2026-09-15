@@ -16,7 +16,10 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
@@ -49,6 +52,7 @@ import kotlin.math.sin
 data class CampSprites(
     val campBg: ImageBitmap? = null,
     val portal: ImageBitmap? = null,
+    val portalSwirl: ImageBitmap? = null,
     val goblinIdle: ImageBitmap? = null,
     val goblinCast: ImageBitmap? = null,
     val grabber: ImageBitmap? = null,
@@ -72,6 +76,7 @@ fun rememberCampSprites(): CampSprites {
         CampSprites(
             campBg = load(R.drawable.camp_bg),
             portal = load(R.drawable.portal_purple),
+            portalSwirl = load(R.drawable.portal_swirl),
             goblinIdle = load(R.drawable.goblin_idle),
             goblinCast = load(R.drawable.goblin_cast),
             grabber = load(R.drawable.grabber_goblin),
@@ -167,18 +172,42 @@ fun CampCanvas(
             drawBeastAt(Offset(w * 0.82f, h * 0.76f), parked, sprites, alpha = 1f, h = h)
         }
 
-        // Portal
+        // Portal (ornate frame) + animated swirl in the oval
         val portalBmp = sprites.portal
         if (portalBmp != null) {
             val pulse = 1f + 0.04f * sin(state.tick * 0.15f)
-            val ph = portalRy * 2.4f * pulse
+            val ph = portalRy * 2.6f * pulse
             val scale = ph / portalBmp.height
             val pw = portalBmp.width * scale
-            drawSprite(
-                portalBmp,
-                dst = Offset(portalCenter.x - pw / 2f, portalCenter.y - ph / 2f),
-                dstSize = Size(pw, ph),
-            )
+            val portalDst = Offset(portalCenter.x - pw / 2f, portalCenter.y - ph / 2f)
+            drawSprite(portalBmp, dst = portalDst, dstSize = Size(pw, ph))
+
+            val swirlBmp = sprites.portalSwirl
+            if (swirlBmp != null) {
+                val swirlW = pw * 0.52f
+                val swirlH = ph * 0.58f
+                val angle = (state.tick * 10f) % 360f
+                val oval = Path().apply {
+                    addOval(
+                        Rect(
+                            left = portalCenter.x - swirlW / 2f,
+                            top = portalCenter.y - swirlH / 2f,
+                            right = portalCenter.x + swirlW / 2f,
+                            bottom = portalCenter.y + swirlH / 2f,
+                        ),
+                    )
+                }
+                clipPath(oval) {
+                    rotate(degrees = angle, pivot = portalCenter) {
+                        drawSprite(
+                            swirlBmp,
+                            dst = Offset(portalCenter.x - swirlW / 2f, portalCenter.y - swirlH / 2f),
+                            dstSize = Size(swirlW, swirlH),
+                            alpha = 0.72f,
+                        )
+                    }
+                }
+            }
         } else {
             drawPortal(portalCenter, portalRx, portalRy, state.tick)
         }
