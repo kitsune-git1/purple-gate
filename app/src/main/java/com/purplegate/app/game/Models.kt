@@ -102,14 +102,22 @@ data class GameState(
             return gps
         }
 
+    /** 0 = almost empty; 1..12 = granular pile sprites up to background mountains. */
     val pileStage: Int
         get() = when {
-            gold < 10 -> 0
-            gold < 50 -> 1
-            gold < 200 -> 2
-            gold < 1_000 -> 3
-            gold < 10_000 -> 4
-            else -> 5
+            gold < 5 -> 0
+            gold < 15 -> 1
+            gold < 35 -> 2
+            gold < 75 -> 3
+            gold < 150 -> 4
+            gold < 300 -> 5
+            gold < 600 -> 6
+            gold < 1_200 -> 7
+            gold < 2_500 -> 8
+            gold < 5_000 -> 9
+            gold < 10_000 -> 10
+            gold < 20_000 -> 11
+            else -> 12
         }
 
     val canSlamGate: Boolean
@@ -122,6 +130,7 @@ data class GameState(
 
     companion object {
         const val PRESTIGE_GOLD_THRESHOLD = 25_000L
+        const val MAX_PILE_STAGE = 12
     }
 }
 

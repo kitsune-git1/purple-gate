@@ -87,6 +87,13 @@ fun rememberCampSprites(): CampSprites {
                 load(R.drawable.gold_pile_3),
                 load(R.drawable.gold_pile_4),
                 load(R.drawable.gold_pile_5),
+                load(R.drawable.gold_pile_6),
+                load(R.drawable.gold_pile_7),
+                load(R.drawable.gold_pile_8),
+                load(R.drawable.gold_pile_9),
+                load(R.drawable.gold_pile_10),
+                load(R.drawable.gold_pile_11),
+                load(R.drawable.gold_pile_12),
             ),
             spellFire = load(R.drawable.spell_fire),
             spellLightning = load(R.drawable.spell_lightning),
@@ -268,17 +275,50 @@ private fun DrawScope.drawGoldPileSprite(
     if (stage <= 0) {
         val coin = sprites.coin
         if (coin != null) {
-            val s = 14.dp.toPx()
+            val s = 12.dp.toPx()
             drawSprite(coin, Offset(base.x - s / 2, base.y - s / 2), Size(s, s))
         } else {
-            drawCircle(Gold, radius = 6.dp.toPx(), center = base)
+            drawCircle(Gold, radius = 5.dp.toPx(), center = base)
         }
         return
     }
-    val idx = (stage - 1).coerceIn(0, 4)
+    val idx = (stage - 1).coerceIn(0, (sprites.goldPiles.size - 1).coerceAtLeast(0))
     val pile = sprites.goldPiles.getOrNull(idx)
     if (pile != null) {
-        val pw = canvasW * (0.28f + stage * 0.04f)
+        // Late stages: soft background mountain ridges behind the main pile
+        if (stage >= 10) {
+            val back = sprites.goldPiles.getOrNull((idx - 2).coerceAtLeast(0)) ?: pile
+            val sideScale = 0.55f + (stage - 10) * 0.08f
+            val bw = canvasW * (0.34f + stage * 0.02f) * sideScale
+            val bScale = bw / back.width
+            val bh = back.height * bScale
+            drawSprite(
+                back,
+                dst = Offset(base.x - canvasW * 0.38f - bw / 2f, base.y - bh * 0.75f),
+                dstSize = Size(bw, bh),
+                alpha = 0.55f,
+            )
+            drawSprite(
+                back,
+                dst = Offset(base.x + canvasW * 0.38f - bw / 2f, base.y - bh * 0.7f),
+                dstSize = Size(bw * 0.9f, bh * 0.9f),
+                alpha = 0.5f,
+            )
+        }
+        if (stage >= 12) {
+            val far = sprites.goldPiles.getOrNull(sprites.goldPiles.lastIndex) ?: pile
+            val fw = canvasW * 0.55f
+            val fScale = fw / far.width
+            val fh = far.height * fScale
+            drawSprite(
+                far,
+                dst = Offset(base.x - fw / 2f, base.y - fh * 0.95f - canvasW * 0.02f),
+                dstSize = Size(fw, fh),
+                alpha = 0.35f,
+            )
+        }
+
+        val pw = canvasW * (0.22f + stage * 0.035f).coerceAtMost(0.72f)
         val scale = pw / pile.width
         val ph = pile.height * scale
         drawSprite(
@@ -286,18 +326,22 @@ private fun DrawScope.drawGoldPileSprite(
             dst = Offset(base.x - pw / 2f, base.y - ph * 0.85f),
             dstSize = Size(pw, ph),
         )
-        // school tint wash on crest
-        if (stage >= 4) {
+        // school tint wash on crest for bigger piles
+        if (stage >= 6) {
             val tint = when (hottest) {
                 SpellSchool.FIRE -> EmberTint
                 SpellSchool.LIGHTNING -> SparkTint
                 SpellSchool.ICE -> FrostTint
                 SpellSchool.NECROMANCY -> Color(0xFFECEFF1)
             }
-            drawCircle(tint.copy(alpha = 0.35f), radius = 12.dp.toPx(), center = Offset(base.x, base.y - ph * 0.7f))
+            drawCircle(
+                tint.copy(alpha = 0.28f + stage * 0.01f),
+                radius = (8 + stage).dp.toPx(),
+                center = Offset(base.x, base.y - ph * 0.72f),
+            )
         }
     } else {
-        drawGoldPileFallback(base, stage, hottest, canvasW)
+        drawGoldPileFallback(base, stage.coerceAtMost(5), hottest, canvasW)
     }
 }
 
